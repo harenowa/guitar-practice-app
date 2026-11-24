@@ -710,9 +710,9 @@
         <audio class="orig-player" id="melody-orig-audio" controls preload="metadata" style="width:100%; margin-top:8px" aria-label="アップロードした元の音源の再生"></audio>
       </div>
       <div class="rotate-banner">
-        <div><div class="rb-title">横向きで練習するのがおすすめです</div><div class="rb-sub">通常のブラウザ（Chromeなど）で開いている場合は、下のボタンで横向き表示に切り替わります。このアプリ内ブラウザでは切り替わらないため、横向き練習はブラウザで開いたときにお使いください。</div></div>
+        <div><div class="rb-title">横向きで練習するのがおすすめです</div><div class="rb-sub">通常のブラウザ（Chromeなど）で開いている場合は、下のボタンで横向き表示に切り替わります。横向きにしたあと、同じボタンをもう一度押すと縦向きに戻ります。このアプリ内ブラウザでは切り替わらないため、横向き練習はブラウザで開いたときにお使いください。</div></div>
         <div class="spacer"></div>
-        <button class="btn" id="melody-landscape" style="background:var(--gold);border-color:#A8842C;border-bottom-color:#A8842C;color:var(--gold-ink)">横向き表示で練習</button>
+        <button class="btn" id="melody-landscape" aria-pressed="false" style="background:var(--gold);border-color:#A8842C;border-bottom-color:#A8842C;color:var(--gold-ink)">横向き表示で練習</button>
         <p class="ls-note hidden" id="melody-ls-note" role="status">この開き方では横向きに切り替えられませんでした。公開ページをChromeなどのブラウザで開くと、このボタンで横向きに切り替わります（スマホを横に持つだけでも横向きレイアウトになります）。</p>
       </div>
       <div class="tab-scroll" id="tab-scroll" style="margin-top:12px">
@@ -802,9 +802,9 @@
       </div>
 
       <div class="rotate-banner">
-        <div><div class="rb-title">横向きで練習するのがおすすめです</div><div class="rb-sub">通常のブラウザ（Chromeなど）で開いている場合は、下のボタンで横向き表示に切り替わります。このアプリ内ブラウザでは切り替わらないため、横向き練習はブラウザで開いたときにお使いください。</div></div>
+        <div><div class="rb-title">横向きで練習するのがおすすめです</div><div class="rb-sub">通常のブラウザ（Chromeなど）で開いている場合は、下のボタンで横向き表示に切り替わります。横向きにしたあと、同じボタンをもう一度押すと縦向きに戻ります。このアプリ内ブラウザでは切り替わらないため、横向き練習はブラウザで開いたときにお使いください。</div></div>
         <div class="spacer"></div>
-        <button class="btn" id="rhythm-landscape" style="background:var(--gold);border-color:#A8842C;border-bottom-color:#A8842C;color:var(--gold-ink)">横向き表示で練習</button>
+        <button class="btn" id="rhythm-landscape" aria-pressed="false" style="background:var(--gold);border-color:#A8842C;border-bottom-color:#A8842C;color:var(--gold-ink)">横向き表示で練習</button>
         <p class="ls-note hidden" id="rhythm-ls-note" role="status">この開き方では横向きに切り替えられませんでした。公開ページをChromeなどのブラウザで開くと、このボタンで横向きに切り替わります（スマホを横に持つだけでも横向きレイアウトになります）。</p>
       </div>
       <div class="row" style="margin-top:14px">
@@ -4520,12 +4520,18 @@ position:fixed で全画面化し、body のスクロールを止めていた。
 同じ症状が出た。そのため、ボタンが画面のレイアウトや
 スクロールを書き換える処理は全廃した。
 
-現在のボタンの動作：
+現在のボタンの動作（トグル式）：
 - 公開ページを通常ブラウザ（Chromeなど）で単独に開いている
 場合のみ、全画面表示＋ screen.orientation.lock("landscape")
 を試みる。成功すれば端末が横向きになり、
 @media (orientation: landscape) の広いレイアウトに
 切り替わる。失敗しても画面は何も変わらない。
+- 横向きにしたあと、同じボタンをもう一度押すと縦向きに
+戻る：screen.orientation.unlock() で向き固定を解除し、
+全画面表示も終了する。ボタン表示も「縦向きに戻す」⇔
+「横向き表示で練習」に切り替わり、メロディ／リズム両方の
+ボタンは常に連動する。ブラウザ側の操作（戻る操作など）で
+全画面が解除された場合も、状態を縦向き側にリセットする。
 - それ以外（このアプリ内表示・WebViewなど）では API を
 一切呼ばず、バナー内に案内を表示するだけ。
 横向きレイアウト自体は、ブラウザで開いて端末を横に持つ
@@ -4548,7 +4554,41 @@ function lsShowNote(id){
 var n = document.getElementById(id);
 if(n){ n.classList.remove("hidden");}
 }
-function tryLandscape(noteId){
+function lsHideNote(id){
+var n = document.getElementById(id);
+if(n){ n.classList.add("hidden");}
+}
+/* 横向き固定中かどうか。メロディ／リズム両ボタンで共有し、
+   どちらからでも同じボタン操作で入る／戻るを切り替える */
+var lsActive = false;
+function lsSetActive(v){
+lsActive = v;
+["melody-landscape","rhythm-landscape"].forEach(function(id){
+var b = document.getElementById(id);
+if(b){
+b.textContent = v ? "縦向きに戻す" : "横向き表示で練習";
+b.setAttribute("aria-pressed", v ? "true" : "false");
+}
+});
+if(!v){ lsHideNote("melody-ls-note"); lsHideNote("rhythm-ls-note");}
+}
+function lsUnlockAndExit(){
+try {
+if(screen.orientation && screen.orientation.unlock){
+screen.orientation.unlock();
+}
+} catch(e){}
+try {
+if(document.fullscreenElement && document.exitFullscreen){
+var ep = document.exitFullscreen();
+if(ep && ep.catch){ ep.catch(function(){});}
+}
+} catch(e){}
+lsSetActive(false);
+}
+function toggleLandscape(noteId){
+/* 横向き固定中にもう一度押したら、縦向きに戻る */
+if(lsActive){ lsUnlockAndExit(); return;}
 if(lsInEmbed() || lsLooksLikeWebView()){
 lsShowNote(noteId);
 return;
@@ -4561,13 +4601,11 @@ var lp = screen.orientation.lock("landscape");
 if(lp && lp.catch){ lp.catch(function(){});}
 }
 } catch(e){}
+/* 全画面に入れた（または既に入っている）時点で横向き側とみなし、
+   次のボタン操作で戻れるようにする */
+lsSetActive(true);
 };
-if(document.fullscreenElement){
-/* トグル：横向き表示中にもう一度押したら、向き固定を解除して全画面を終わり、縦向きに戻る */
-try { if(screen.orientation && screen.orientation.unlock){ screen.orientation.unlock(); } } catch(e){}
-try { var xp = document.exitFullscreen(); if(xp && xp.catch){ xp.catch(function(){}); } } catch(e){}
-return;
-}
+if(document.fullscreenElement){ lock(); return;}
 var root = document.documentElement;
 if(root.requestFullscreen){
 var p = root.requestFullscreen();
@@ -4581,11 +4619,23 @@ lsShowNote(noteId);
 }
 } catch(e){ lsShowNote(noteId);}
 }
+/* ブラウザ操作などで全画面が外れたら、向き固定とボタン状態も
+   縦向き側にリセットする（ボタン表示だけ横向き用に残らないように） */
+document.addEventListener("fullscreenchange", function(){
+if(!document.fullscreenElement && lsActive){
+try {
+if(screen.orientation && screen.orientation.unlock){
+screen.orientation.unlock();
+}
+} catch(e){}
+lsSetActive(false);
+}
+});
 (function(){
 var mb = document.getElementById("melody-landscape");
-if(mb){ mb.addEventListener("click", function(){ tryLandscape("melody-ls-note");});}
+if(mb){ mb.addEventListener("click", function(){ toggleLandscape("melody-ls-note");});}
 var rb = document.getElementById("rhythm-landscape");
-if(rb){ rb.addEventListener("click", function(){ tryLandscape("rhythm-ls-note");});}
+if(rb){ rb.addEventListener("click", function(){ toggleLandscape("rhythm-ls-note");});}
 })();
 </script>
 </body>
