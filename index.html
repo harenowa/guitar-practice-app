@@ -591,8 +591,7 @@
       <button role="tab" aria-selected="false" data-tab="rhythm">リズム練習</button>
       <button role="tab" aria-selected="false" data-tab="chords">コード練習</button>
       <button role="tab" aria-selected="false" data-tab="metro">メトロノーム</button>
-      <button role="tab" aria-selected="false" data-tab="aitab">AI音源→タブ</button>
-      <button role="tab" aria-selected="false" data-tab="sources">追加音源リスト</button>
+      <button role="tab" aria-selected="false" data-tab="aitab">自作音源→タブ</button>
     </div>
   </nav>
 
@@ -1107,35 +1106,6 @@
   </section>
 
   <!-- ================= SOURCES ================= -->
-  <section class="panel" id="panel-sources" role="tabpanel">
-    <div class="card">
-      <h2>追加できる音源リスト（候補）</h2>
-      <p class="sub">現時点で把握している「このアプリに追加できる音源」の一覧です。市販曲そのものはライセンスの関係で入れられないため、候補は<strong>パブリックドメインの曲・アプリ内合成・練習フレーズ・あなたの持ち込み音源</strong>に限っています。気になるものに「候補に入れる」を押して選び、下のボタンで<strong>選択リストをコピー</strong>してチャットで送ってください。選んでもらったものから実装します。</p>
-
-      <h3>A. メロディ曲（パブリックドメイン：伝統曲・唱歌・クラシック）</h3>
-      <div class="source-grid" id="src-group-a"></div>
-
-      <h3>B. 練習フレーズ集（タブデータとして作成）</h3>
-      <div class="source-grid" id="src-group-b"></div>
-
-      <h3>C. バッキング／リズム素材（アプリ内合成）</h3>
-      <div class="source-grid" id="src-group-c"></div>
-
-      <h3>D. あなたの音源の持ち込み拡張</h3>
-      <div class="source-grid" id="src-group-d"></div>
-
-      <div class="pick-summary" id="pick-summary">
-        <p><strong>選択中：<span id="pick-count">0</span>件</strong>　<span id="pick-names" style="color:var(--ink2)">まだ選ばれていません。各カードの「候補に入れる」を押してください。</span></p>
-        <div class="row">
-          <button class="btn teal" id="pick-copy">選択リストをコピーする</button>
-          <button class="btn" id="pick-download">テキストで保存する</button>
-          <button class="btn" id="pick-clear">選択をすべて外す</button>
-          <span class="judge" id="pick-msg" aria-live="polite"></span>
-        </div>
-        <p style="margin-top:10px; font-size:13px; color:var(--ink2)">コピーしたリストをチャットに貼って送ってもらえれば、その内容で実装に進みます。この選択はこの画面の中だけのもので、閉じると消えます。</p>
-      </div>
-    </div>
-  </section>
 
   <!-- ================= SPEC ================= -->
 
@@ -1794,7 +1764,7 @@ onMicFrame(function(frame){
 /* ============================================================
    タブ切り替え
 ============================================================ */
-/* アップロードした元の音源のプレーヤー（AI音源→タブ／メロディ練習／リズム練習に置いた
+/* アップロードした元の音源のプレーヤー（自作音源→タブ／メロディ練習／リズム練習に置いた
    <audio>）をすべて止める。合成音の停止とは別系統なので、ここでまとめて扱う */
 function pauseOriginalAudio(){
   document.querySelectorAll("audio.orig-player").forEach(function(a){ try { a.pause(); } catch(e){} });
@@ -2031,6 +2001,23 @@ var SONGS = [
   { title: "アメイジング・グレイス（伝統曲）", bpm: 84,
     sections: [{ name: "フレーズ1", start: 0, end: 11 }, { name: "フレーズ2", start: 11, end: 22 }],
     notes: [[67,1],[72,2],[76,0.5],[72,0.5],[76,2],[74,1],[72,2],[69,1],[67,1],[64,1],[67,2],[67,1],[72,2],[76,0.5],[72,0.5],[76,2],[74,1],[72,2],[69,1],[67,1],[64,1],[67,3]] },
+  { title: "聖者の行進（アメリカ伝統曲）", bpm: 116,
+    sections: [{ name: "フレーズ1（ド・ミ・ファ・ソの反復）", start: 0, end: 12 }, { name: "フレーズ2（高いドへ）", start: 12, end: 22 }, { name: "フレーズ3（低い音の掛け合い〜終わり）", start: 22, end: 35 }],
+    notes: [[60,1],[64,1],[65,1],[67,1],[60,1],[64,1],[65,1],[67,1],[60,1],[64,1],[65,1],[67,1],
+            [72,1],[76,1],[74,1],[72,1],[76,1],[74,1],[72,1],[76,1],[74,1],[72,2],
+            [64,1],[62,1],[60,1],[64,1],[67,1],[67,1],[64,1],[65,1],[67,1],[72,1],[76,1],[74,1],[72,2]] },
+  { title: "喜びの歌（ベートーヴェン）", bpm: 104,
+    sections: [{ name: "フレーズ1", start: 0, end: 15 }, { name: "フレーズ2", start: 15, end: 30 }, { name: "フレーズ3（低いソで締める中間部）", start: 30, end: 47 }, { name: "フレーズ4（フレーズ2の繰り返し）", start: 47, end: 62 }],
+    notes: [[64,1],[64,1],[65,1],[67,1],[67,1],[65,1],[64,1],[62,1],[60,1],[60,1],[62,1],[64,1],[64,1.5],[62,0.5],[62,2],
+            [64,1],[64,1],[65,1],[67,1],[67,1],[65,1],[64,1],[62,1],[60,1],[60,1],[62,1],[64,1],[62,1.5],[60,0.5],[60,2],
+            [62,1],[62,1],[64,1],[60,1],[62,1],[64,0.5],[65,0.5],[64,1],[60,1],[62,1],[64,0.5],[65,0.5],[64,1],[62,1],[60,1],[62,1],[55,2],
+            [64,1],[64,1],[65,1],[67,1],[67,1],[65,1],[64,1],[62,1],[60,1],[60,1],[62,1],[64,1],[62,1.5],[60,0.5],[60,2]] },
+  { title: "ハッピーバースデー（伝統曲）", bpm: 100,
+    sections: [{ name: "フレーズ1（Happy birthday to you）", start: 0, end: 6 }, { name: "フレーズ2", start: 6, end: 12 }, { name: "フレーズ3（高いソへ）", start: 12, end: 19 }, { name: "フレーズ4（終わり）", start: 19, end: 25 }],
+    notes: [[67,0.75],[67,0.25],[69,1],[67,1],[72,1],[71,2],
+            [67,0.75],[67,0.25],[69,1],[67,1],[74,1],[72,2],
+            [67,0.75],[67,0.25],[79,1],[76,1],[72,1],[71,1],[69,2],
+            [77,0.75],[77,0.25],[76,1],[72,1],[74,1],[72,2]] },
   { title: "アルペジオ練習（C–G–Am–F 分散和音）", bpm: 84,
     sections: [{ name: "C（分散和音）", start: 0, end: 8 }, { name: "G（分散和音）", start: 8, end: 16 }, { name: "Am（分散和音）", start: 16, end: 24 }, { name: "F（分散和音）", start: 24, end: 32 }],
     notes: [[48,0.5],[52,0.5],[55,0.5],[60,0.5],[64,0.5],[60,0.5],[55,0.5],[52,0.5],
@@ -3073,7 +3060,7 @@ function setAiFile(f){
    元の音源そのものの再生（演奏のお手本）
    これまでアップロードしたファイルは解析に読み込むだけで、元の演奏を
    アプリ内で聴く手段がなかった。ファイルのオブジェクトURL（端末内だけの
-   参照で、外部には送信されない）を3か所のプレーヤー（AI音源→タブ／
+   参照で、外部には送信されない）を3か所のプレーヤー（自作音源→タブ／
    メロディ練習／リズム練習）に渡し、元の演奏をそのまま聴けるようにする。
    練習画面のプレーヤーは、選択中の曲が「今アップロードしているファイル
    から作った曲」のときだけ表示する（別の曲で誤って鳴らさないため）。
@@ -4390,121 +4377,6 @@ document.getElementById("rhythm-flow").addEventListener("change", function(){
   if(rhythm.playing){ stopRhythm(); }
 });
 
-/* ============================================================
-   追加音源リスト（候補の選択→コピー/保存）
-============================================================ */
-var SOURCE_ITEMS = [
-  /* A: メロディ曲 */
-  { g: "a", name: "歓びの歌（ベートーヴェン）", desc: "誰もが知る単音メロディ。低ポジションだけで弾け、最初の追加曲に最適。", meta: ["初級", "メロディ練習", "追加しやすい"] },
-  { g: "a", name: "ふるさと（唱歌）", desc: "ゆったりした唱歌。ロングトーンとビブラートの練習向き。", meta: ["初級", "メロディ練習", "追加しやすい"] },
-  { g: "a", name: "ハッピー・バースデー（伝統曲）", desc: "実用的な1曲。3拍子で、付点のリズム読みの練習にも。", meta: ["初級", "メロディ練習", "追加しやすい"] },
-  { g: "a", name: "聖者の行進（伝統曲）", desc: "明るく速めのメロディ。リズム練習モードとの相性が良い。", meta: ["中級", "メロディ／リズム練習", "要作業"] },
-  /* B: 練習フレーズ */
-  { g: "b", name: "Aマイナーペンタトニック・スケール（上下行）", desc: "ロック／ブルースの基礎。1ポジション分の往復フレーズとして追加。", meta: ["初級〜中級", "フレーズ練習", "追加しやすい"] },
-  { g: "b", name: "ブルース・スケール フレーズ集", desc: "ブルースらしい短いリック（決めフレーズ）を数パターン。", meta: ["中級", "フレーズ練習", "要作業"] },
-  { g: "b", name: "クロマチック運指トレーニング", desc: "1弦ずつ半音で進む指の独立練習。ウォームアップ用。", meta: ["初級", "基礎練習", "追加しやすい"] },
-  { g: "b", name: "ハンマリング／プリング基礎フレーズ", desc: "レガートの基礎テクニックを短いフレーズで反復。", meta: ["中級", "テクニック", "要作業"] },
-  /* C: バッキング/リズム素材 */
-  { g: "c", name: "8ビート ロック風ドラム＋ベースライン（合成）", desc: "キック／スネア／ハットとルート弾きベースをWeb Audioで合成するリズム隊ループ。", meta: ["初級〜中級", "合成リズム隊", "要作業"] },
-  { g: "c", name: "フォーク風 3フィンガー伴奏パターン", desc: "親指＋3本指の分散パターンをガイド表示つきで。", meta: ["初級〜中級", "伴奏パターン", "要作業"] },
-  /* D: 持ち込み拡張 */
-  { g: "d", name: "自分のAI生成曲の「メロディのみステム」取り込み", desc: "Suno等でメロディだけのトラックを書き出して読み込む運用ガイドと、取り込み後のタブ化。単音ラインなら精度が出やすい。", meta: ["全レベル", "持ち込み", "ガイドのみ"] },
-  { g: "d", name: "自分のmp3からの一括タブ化（既存機能の拡張）", desc: "「AI音源→タブ」で作ったタブを、メロディ練習の曲としてそのまま練習できるようにする拡張。", meta: ["全レベル", "機能拡張", "要作業"] }
-];
-var pickedSources = {};
-function renderSources(){
-  SOURCE_ITEMS.forEach(function(item){
-    var grid = document.getElementById("src-group-" + item.g);
-    if(!grid){ return; }
-    var card = document.createElement("div");
-    card.className = "source-card";
-    var metaHtml = item.meta.map(function(m){ return "<span>" + m + "</span>"; }).join("");
-    card.innerHTML = "<h4>" + item.name + "</h4><p>" + item.desc + '</p><div class="meta">' + metaHtml + "</div>";
-    var btn = document.createElement("button");
-    btn.className = "btn small pick-btn";
-    btn.textContent = "候補に入れる";
-    btn.addEventListener("click", function(){
-      if(pickedSources[item.name]){
-        delete pickedSources[item.name];
-        card.classList.remove("picked");
-        btn.textContent = "候補に入れる";
-        btn.classList.remove("teal");
-      } else {
-        pickedSources[item.name] = true;
-        card.classList.add("picked");
-        btn.textContent = "選択中（タップで外す）";
-        btn.classList.add("teal");
-      }
-      updatePickSummary();
-    });
-    card.appendChild(btn);
-    grid.appendChild(card);
-  });
-}
-function pickedList(){ return Object.keys(pickedSources); }
-function updatePickSummary(){
-  var list = pickedList();
-  document.getElementById("pick-count").textContent = list.length;
-  document.getElementById("pick-names").textContent = list.length ?
-    list.join("／") : "まだ選ばれていません。各カードの「候補に入れる」を押してください。";
-}
-function pickText(){
-  var list = pickedList();
-  return "ギター練習アプリ 追加音源の希望リスト\n" +
-    list.map(function(n, i){ return (i + 1) + ". " + n; }).join("\n") +
-    (list.length ? "" : "（未選択）");
-}
-document.getElementById("pick-copy").addEventListener("click", function(){
-  var msg = document.getElementById("pick-msg");
-  if(!pickedList().length){
-    msg.textContent = "先に候補を選んでください";
-    msg.className = "judge miss";
-    return;
-  }
-  var text = pickText();
-  function done(){
-    msg.textContent = "コピーしました。チャットに貼って送ってください";
-    msg.className = "judge perfect";
-  }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text); done(); });
-  } else {
-    fallbackCopy(text); done();
-  }
-});
-function fallbackCopy(text){
-  var ta = document.createElement("textarea");
-  ta.value = text;
-  ta.style.position = "fixed"; ta.style.opacity = "0";
-  document.body.appendChild(ta);
-  ta.select();
-  try { document.execCommand("copy"); } catch(e) {}
-  ta.remove();
-}
-document.getElementById("pick-download").addEventListener("click", function(){
-  var msg = document.getElementById("pick-msg");
-  if(!pickedList().length){
-    msg.textContent = "先に候補を選んでください";
-    msg.className = "judge miss";
-    return;
-  }
-  var blob = new Blob([pickText()], { type: "text/plain;charset=utf-8" });
-  var a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "guitar-source-picks.txt";
-  document.body.appendChild(a); a.click();
-  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 400);
-});
-document.getElementById("pick-clear").addEventListener("click", function(){
-  pickedSources = {};
-  document.querySelectorAll(".source-card.picked").forEach(function(c){ c.classList.remove("picked"); });
-  document.querySelectorAll(".pick-btn").forEach(function(b){
-    b.textContent = "候補に入れる"; b.classList.remove("teal");
-  });
-  updatePickSummary();
-});
-renderSources();
-updatePickSummary();
 </script>
 <script>
 "use strict";
