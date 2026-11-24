@@ -4562,7 +4562,12 @@ if(lp && lp.catch){ lp.catch(function(){});}
 }
 } catch(e){}
 };
-if(document.fullscreenElement){ lock(); return;}
+if(document.fullscreenElement){
+/* トグル：横向き表示中にもう一度押したら、向き固定を解除して全画面を終わり、縦向きに戻る */
+try { if(screen.orientation && screen.orientation.unlock){ screen.orientation.unlock(); } } catch(e){}
+try { var xp = document.exitFullscreen(); if(xp && xp.catch){ xp.catch(function(){}); } } catch(e){}
+return;
+}
 var root = document.documentElement;
 if(root.requestFullscreen){
 var p = root.requestFullscreen();
